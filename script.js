@@ -134,3 +134,37 @@ function animateParticles() {
     requestAnimationFrame(animateParticles);
 }
 animateParticles();
+
+// ================== TYPEWRITER EFFECT ==================
+const typedElement = document.getElementById("typed-name");
+const text = "Hasan Ahmed";
+let index = 0;
+let deleting = false;
+
+function typeEffect() {
+    if (!typedElement) return;
+
+    if (!deleting) {
+        // Typing forward
+        typedElement.textContent = text.substring(0, index + 1);
+        index++;
+
+        if (index === text.length) {
+            // Pause before deleting
+            setTimeout(() => deleting = true, 800);
+        }
+    } else {
+        // Deleting backward
+        typedElement.textContent = text.substring(0, index - 1);
+        index--;
+
+        if (index === 0) {
+            deleting = false;
+        }
+    }
+
+    const speed = deleting ? 80 : 120; // typing / deleting speeds
+    setTimeout(typeEffect, speed);
+}
+
+typeEffect();

@@ -1,166 +1,196 @@
-// ================== YEAR + FADE-IN ==================
-document.addEventListener("DOMContentLoaded", () => {
-    const yearSpan = document.getElementById("year");
-    if (yearSpan) yearSpan.textContent = new Date().getFullYear();
-
-    document.querySelectorAll(".fade-in").forEach((el) => {
-        requestAnimationFrame(() => el.classList.add("visible"));
-    });
-});
-
-
-// ================== CURSOR GLOW ==================
-const glow = document.querySelector(".cursor-glow");
-window.addEventListener("mousemove", (e) => {
-    if (!glow) return;
-    const size = glow.offsetWidth / 2;
-    glow.style.transform =
-        `translate3d(${e.clientX - size}px, ${e.clientY - size}px, 0)`;
-});
-
-
-// ================== PARTICLE BACKGROUND ==================
-const canvas = document.getElementById("particles");
-const ctx = canvas.getContext("2d");
-
-let particles = [];
-let mouse = { x: null, y: null, radius: 140, pulse: 0 };
-
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-resizeCanvas();
-
-window.addEventListener("resize", resizeCanvas);
-
-// Track mouse
-window.addEventListener("mousemove", (e) => {
-    mouse.x = e.x;
-    mouse.y = e.y;
-
-    mouse.pulse = 1;
-});
-
-
-// ---------------------- PARTICLE CLASS ----------------------
-class Particle {
-    constructor(x, y, size) {
-        this.x = x;
-        this.y = y;
-        this.baseX = x;
-        this.baseY = y;
-        this.size = size;
-    }
-
-    draw() {
-        ctx.beginPath();
-        ctx.fillStyle = `rgba(255,255,255,${0.45 + mouse.pulse * 0.4})`;
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-    }
-
-    update() {
-        let dx = this.x - mouse.x;
-        let dy = this.y - mouse.y;
-        let distance = Math.sqrt(dx * dx + dy * dy);
-
-        if (distance < mouse.radius) {
-            let force = (mouse.radius - distance) / mouse.radius;
-            let forceX = (dx / distance) * force * 6;
-            let forceY = (dy / distance) * force * 6;
-
-            this.x += forceX;
-            this.y += forceY;
-        } else {
-            this.x -= (this.x - this.baseX) * 0.02;
-            this.y -= (this.y - this.baseY) * 0.02;
-        }
-
-        this.draw();
-    }
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
 
-
-// ---------------------- INIT PARTICLES ----------------------
-function initParticles() {
-    particles = [];
-    const number = Math.floor((canvas.width * canvas.height) / 9000);
-
-    for (let i = 0; i < number; i++) {
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height;
-        particles.push(new Particle(x, y, 1.4));
-    }
-}
-initParticles();
-
-
-// ---------------------- CONNECTING LINES ----------------------
-function connectParticles() {
-    for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-            let dx = particles[i].x - particles[j].x;
-            let dy = particles[i].y - particles[j].y;
-            let distance = dx * dx + dy * dy;
-
-            if (distance < 14000) {
-                ctx.beginPath();
-                ctx.strokeStyle = "rgba(255,255,255,0.12)";
-                ctx.lineWidth = 0.6;
-                ctx.moveTo(particles[i].x, particles[i].y);
-                ctx.lineTo(particles[j].x, particles[j].y);
-                ctx.stroke();
-            }
-        }
-    }
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    background: #020204;
+    color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
 }
 
-
-// ---------------------- ANIMATION LOOP ----------------------
-function animateParticles() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (mouse.pulse > 0) mouse.pulse -= 0.02;
-    if (mouse.pulse < 0) mouse.pulse = 0;
-
-    particles.forEach((p) => p.update());
-    connectParticles();
-
-    requestAnimationFrame(animateParticles);
+/* Cursor glow */
+.cursor-glow {
+    position: fixed;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.18), transparent 65%);
+    pointer-events: none;
+    mix-blend-mode: screen;
+    opacity: 0.6;
+    transform: translate3d(-9999px, -9999px, 0);
+    transition: transform 0.12s ease-out;
+    z-index: -1;
 }
-animateParticles();
 
+/* Navbar */
+.nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(18px);
+    background: linear-gradient(
+        to bottom,
+        rgba(10, 10, 10, 0.8),
+        rgba(10, 10, 10, 0.2)
+    );
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    z-index: 10;
+}
 
-// ================== TYPEWRITER EFFECT ==================
-document.addEventListener("DOMContentLoaded", () => {
-    const typedElement = document.getElementById("typed-name");
-    if (!typedElement) return;
+.logo {
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
 
-    const text = "Hasan Ahmed";
-    let index = 0;
-    let deleting = false;
+.nav nav a {
+    margin-left: 18px;
+    font-size: 0.95rem;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.72);
+    padding-bottom: 2px;
+    border-bottom: 1px solid transparent;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
 
-    function typeEffect() {
-        if (!deleting) {
-            typedElement.textContent = text.substring(0, index + 1);
-            index++;
+.nav nav a:hover {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.5);
+}
 
-            if (index === text.length) {
-                setTimeout(() => deleting = true, 800);
-            }
-        } else {
-            typedElement.textContent = text.substring(0, index - 1);
-            index--;
+.nav nav a.active {
+    color: #ffffff;
+    border-color: #ffffff;
+}
 
-            if (index === 0) {
-                deleting = false;
-            }
-        }
+/* Layout */
+.container {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 120px 18px 60px;
+}
 
-        const speed = deleting ? 80 : 120;
-        setTimeout(typeEffect, speed);
-    }
+/* Fade-in animation */
+.fade-in {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
 
-    typeEffect();
-});
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Hero */
+.hero {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.hero-small {
+    margin-bottom: 28px;
+}
+
+.hero h1 {
+    font-size: clamp(2.6rem, 4vw, 3.4rem);
+    margin: 0 0 10px;
+}
+
+.subtitle {
+    margin: 0;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+/* Card grid */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 22px;
+}
+
+/* Glass cards */
+.card {
+    position: relative;
+    padding: 22px 20px 20px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.8);
+    text-decoration: none;
+    color: #ffffff;
+    overflow: hidden;
+    backdrop-filter: blur(22px);
+    transform-style: preserve-3d;
+    transition: 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+}
+
+/* Floating */
+.floating {
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+    100% { transform: translateY(0); }
+}
+
+/* About page */
+.about-content {
+    margin: 0 auto;
+    max-width: 640px;
+}
+
+/* Footer */
+footer {
+    width: 100%;
+    padding: 18px 22px 22px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: auto;
+}
+
+/* Particles canvas */
+#particles {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -3;
+}
+
+/* Typing cursor */
+#typed-name {
+    border-right: 3px solid white;
+    padding-right: 4px;
+    animation: blinkCursor 0.8s steps(1) infinite;
+    white-space: nowrap;
+}
+
+@keyframes blinkCursor {
+    50% { border-color: transparent; }
+}

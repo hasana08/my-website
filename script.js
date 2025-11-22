@@ -135,36 +135,48 @@ function animateParticles() {
 }
 animateParticles();
 
-// ================== TYPEWRITER EFFECT ==================
-const typedElement = document.getElementById("typed-name");
-const text = "Hasan Ahmed";
-let index = 0;
-let deleting = false;
+// ================== TYPEWRITER EFFECT (MULTI-LINE) ==================
 
-function typeEffect() {
+document.addEventListener("DOMContentLoaded", () => {
+    const typedElement = document.getElementById("typed-name");
     if (!typedElement) return;
 
-    if (!deleting) {
-        // Typing forward
-        typedElement.textContent = text.substring(0, index + 1);
-        index++;
+    const texts = [
+        "Hasan Ahmed",
+        "Biochemistry Undergraduate",
+        "Aspiring Physician Assistant"
+    ];
 
-        if (index === text.length) {
-            // Pause before deleting
-            setTimeout(() => deleting = true, 800);
-        }
-    } else {
-        // Deleting backward
-        typedElement.textContent = text.substring(0, index - 1);
-        index--;
+    let textIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
 
-        if (index === 0) {
-            deleting = false;
+    function typeEffect() {
+        const currentText = texts[textIndex];
+
+        if (!deleting) {
+            // Typing forward
+            typedElement.textContent = currentText.substring(0, charIndex + 1);
+            charIndex++;
+
+            if (charIndex === currentText.length) {
+                setTimeout(() => deleting = true, 900);
+            }
+        } else {
+            // Deleting backward
+            typedElement.textContent = currentText.substring(0, charIndex - 1);
+            charIndex--;
+
+            if (charIndex === 0) {
+                deleting = false;
+                textIndex = (textIndex + 1) % texts.length; // Move to next line
+            }
         }
+
+        const speed = deleting ? 70 : 110;
+        setTimeout(typeEffect, speed);
     }
 
-    const speed = deleting ? 80 : 120; // typing / deleting speeds
-    setTimeout(typeEffect, speed);
-}
+    typeEffect();
+});
 
-typeEffect();

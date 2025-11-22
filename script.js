@@ -14,7 +14,8 @@ const glow = document.querySelector(".cursor-glow");
 window.addEventListener("mousemove", (e) => {
     if (!glow) return;
     const size = glow.offsetWidth / 2;
-    glow.style.transform = `translate3d(${e.clientX - size}px, ${e.clientY - size}px, 0)`;
+    glow.style.transform =
+        `translate3d(${e.clientX - size}px, ${e.clientY - size}px, 0)`;
 });
 
 
@@ -56,10 +57,7 @@ class Particle {
     draw() {
         ctx.beginPath();
 
-        // Color pulse effect
-        let pulseColor = Math.min(mouse.pulse * 255, 255);
         ctx.fillStyle = `rgba(255,255,255,${0.45 + mouse.pulse * 0.4})`;
-
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
     }
@@ -88,7 +86,7 @@ class Particle {
 }
 
 
-// ---------------------- INITIALIZE PARTICLES ----------------------
+// ---------------------- INIT PARTICLES ----------------------
 function initParticles() {
     particles = [];
     const number = Math.floor((canvas.width * canvas.height) / 9000);
@@ -127,7 +125,6 @@ function connectParticles() {
 function animateParticles() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Fade out pulse gradually
     if (mouse.pulse > 0) mouse.pulse -= 0.02;
     if (mouse.pulse < 0) mouse.pulse = 0;
 

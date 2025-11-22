@@ -157,7 +157,7 @@ body {
     transform: translateY(-4px);
 }
 
-/* Floating animation */
+/* Floating cards */
 .floating {
     animation: float 6s ease-in-out infinite;
 }
@@ -174,7 +174,7 @@ body {
     }
 }
 
-/* About content card */
+/* About page */
 .about-content {
     margin: 0 auto;
     max-width: 640px;
@@ -204,8 +204,4 @@ footer {
     border-right: 3px solid white;
     padding-right: 4px;
     animation: blinkCursor 0.8s steps(1) infinite;
-}
-
-@keyframes blinkCursor {
-    50% { border-color: transparent; }
-}
+    white-space: nowra

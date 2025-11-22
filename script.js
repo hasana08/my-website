@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-
 // ================== CURSOR GLOW ==================
 const glow = document.querySelector(".cursor-glow");
 window.addEventListener("mousemove", (e) => {
@@ -18,8 +17,7 @@ window.addEventListener("mousemove", (e) => {
         `translate3d(${e.clientX - size}px, ${e.clientY - size}px, 0)`;
 });
 
-
-// ================== PARTICLE BACKGROUND ==================
+// ================== PARTICLES ==================
 const canvas = document.getElementById("particles");
 const ctx = canvas.getContext("2d");
 
@@ -31,20 +29,14 @@ function resizeCanvas() {
     canvas.height = window.innerHeight;
 }
 resizeCanvas();
-
 window.addEventListener("resize", resizeCanvas);
 
-// Track mouse
 window.addEventListener("mousemove", (e) => {
     mouse.x = e.x;
     mouse.y = e.y;
-
-    // Trigger color pulse
     mouse.pulse = 1;
 });
 
-
-// ---------------------- PARTICLE CLASS ----------------------
 class Particle {
     constructor(x, y, size) {
         this.x = x;
@@ -53,130 +45,110 @@ class Particle {
         this.baseY = y;
         this.size = size;
     }
-
     draw() {
         ctx.beginPath();
-
-        ctx.fillStyle = `rgba(255,255,255,${0.45 + mouse.pulse * 0.4})`;
+        ctx.fillStyle = `rgba(255,255,255,${0.5 + mouse.pulse})`;
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
     }
-
     update() {
         let dx = this.x - mouse.x;
         let dy = this.y - mouse.y;
         let distance = Math.sqrt(dx * dx + dy * dy);
 
-        // Repulsion
         if (distance < mouse.radius) {
             let force = (mouse.radius - distance) / mouse.radius;
-            let forceX = (dx / distance) * force * 6;
-            let forceY = (dy / distance) * force * 6;
-
-            this.x += forceX;
-            this.y += forceY;
+            let fx = (dx / distance) * force * 6;
+            let fy = (dy / distance) * force * 6;
+            this.x += fx;
+            this.y += fy;
         } else {
-            // Return to base
             this.x -= (this.x - this.baseX) * 0.02;
             this.y -= (this.y - this.baseY) * 0.02;
         }
-
         this.draw();
     }
 }
 
-
-// ---------------------- INIT PARTICLES ----------------------
 function initParticles() {
     particles = [];
-    const number = Math.floor((canvas.width * canvas.height) / 9000);
-
+    let number = (canvas.width * canvas.height) / 9000;
     for (let i = 0; i < number; i++) {
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height;
-        particles.push(new Particle(x, y, 1.4));
+        particles.push(new Particle(
+            Math.random() * canvas.width,
+            Math.random() * canvas.height,
+            1.4
+        ));
     }
 }
 initParticles();
 
-
-// ---------------------- CONNECTING LINES ----------------------
 function connectParticles() {
-    for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-            let dx = particles[i].x - particles[j].x;
-            let dy = particles[i].y - particles[j].y;
+    for (let a = 0; a < particles.length; a++) {
+        for (let b = a + 1; b < particles.length; b++) {
+            let dx = particles[a].x - particles[b].x;
+            let dy = particles[a].y - particles[b].y;
             let distance = dx * dx + dy * dy;
 
-            if (distance < 14000) {
+            if (distance < 15000) {
                 ctx.beginPath();
                 ctx.strokeStyle = "rgba(255,255,255,0.12)";
                 ctx.lineWidth = 0.6;
-                ctx.moveTo(particles[i].x, particles[i].y);
-                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.moveTo(particles[a].x, particles[a].y);
+                ctx.lineTo(particles[b].x, particles[b].y);
                 ctx.stroke();
             }
         }
     }
 }
 
-
-// ---------------------- ANIMATION LOOP ----------------------
-function animateParticles() {
+function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     if (mouse.pulse > 0) mouse.pulse -= 0.02;
-    if (mouse.pulse < 0) mouse.pulse = 0;
-
     particles.forEach((p) => p.update());
     connectParticles();
-
-    requestAnimationFrame(animateParticles);
+    requestAnimationFrame(animate);
 }
-animateParticles();
+animate();
 
-// ================== TYPEWRITER EFFECT (MULTI-LINE) ==================
-
+// ================== TYPING TEXT (MULTI-PHRASE, HOME ONLY) ==================
 document.addEventListener("DOMContentLoaded", () => {
-    const typedElement = document.getElementById("typed-name");
-    if (!typedElement) return;
+    const typed = document.getElementById("typed-name");
+    if (!typed) return; // safely does nothing on about.html
 
-    const texts = [
+    const phrases = [
         "Hasan Ahmed",
         "Biochemistry Undergraduate",
         "Aspiring Physician Assistant"
     ];
 
-    let textIndex = 0;
+    let phraseIndex = 0;
     let charIndex = 0;
     let deleting = false;
 
-    function typeEffect() {
-        const currentText = texts[textIndex];
+    function loop() {
+        const current = phrases[phraseIndex];
+
+        typed.textContent = current.substring(0, charIndex);
 
         if (!deleting) {
-            // Typing forward
-            typedElement.textContent = currentText.substring(0, charIndex + 1);
-            charIndex++;
-
-            if (charIndex === currentText.length) {
-                setTimeout(() => deleting = true, 900);
+            if (charIndex < current.length) {
+                charIndex++;
+            } else {
+                setTimeout(() => (deleting = true), 900);
             }
         } else {
-            // Deleting backward
-            typedElement.textContent = currentText.substring(0, charIndex - 1);
-            charIndex--;
-
-            if (charIndex === 0) {
+            if (charIndex > 0) {
+                charIndex--;
+            } else {
                 deleting = false;
-                textIndex = (textIndex + 1) % texts.length; // Move to next line
+                phraseIndex = (phraseIndex + 1) % phrases.length;
             }
         }
 
-        const speed = deleting ? 70 : 110;
-        setTimeout(typeEffect, speed);
+        const speed = deleting ? 70 : 120;
+        setTimeout(loop, speed);
     }
 
-    typeEffect();
+    loop();
 });
-

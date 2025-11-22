@@ -23,7 +23,7 @@ const canvas = document.getElementById("particles");
 const ctx = canvas.getContext("2d");
 
 let particles = [];
-let mouse = { x: null, y: null, radius: 140 };
+let mouse = { x: null, y: null, radius: 140, pulse: 0 };
 
 function resizeCanvas() {
     canvas.width = window.innerWidth;
@@ -33,12 +33,17 @@ resizeCanvas();
 
 window.addEventListener("resize", resizeCanvas);
 
+// Track mouse
 window.addEventListener("mousemove", (e) => {
     mouse.x = e.x;
     mouse.y = e.y;
+
+    // Trigger color pulse
+    mouse.pulse = 1;
 });
 
-// Create particles
+
+// ---------------------- PARTICLE CLASS ----------------------
 class Particle {
     constructor(x, y, size) {
         this.x = x;
@@ -46,23 +51,25 @@ class Particle {
         this.baseX = x;
         this.baseY = y;
         this.size = size;
-        this.speed = (Math.random() * 2) + 0.5;
     }
 
     draw() {
         ctx.beginPath();
+
+        // Color pulse effect
+        let pulseColor = Math.min(mouse.pulse * 255, 255);
+        ctx.fillStyle = `rgba(255,255,255,${0.45 + mouse.pulse * 0.4})`;
+
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255,255,255,0.55)";
         ctx.fill();
     }
 
     update() {
-        // Move slowly
         let dx = this.x - mouse.x;
         let dy = this.y - mouse.y;
         let distance = Math.sqrt(dx * dx + dy * dy);
 
-        // Repulsion effect
+        // Repulsion
         if (distance < mouse.radius) {
             let force = (mouse.radius - distance) / mouse.radius;
             let forceX = (dx / distance) * force * 6;
@@ -71,7 +78,7 @@ class Particle {
             this.x += forceX;
             this.y += forceY;
         } else {
-            // Slowly return to base position
+            // Return to base
             this.x -= (this.x - this.baseX) * 0.02;
             this.y -= (this.y - this.baseY) * 0.02;
         }
@@ -80,6 +87,8 @@ class Particle {
     }
 }
 
+
+// ---------------------- INITIALIZE PARTICLES ----------------------
 function initParticles() {
     particles = [];
     const number = Math.floor((canvas.width * canvas.height) / 9000);
@@ -92,9 +101,39 @@ function initParticles() {
 }
 initParticles();
 
+
+// ---------------------- CONNECTING LINES ----------------------
+function connectParticles() {
+    for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+            let dx = particles[i].x - particles[j].x;
+            let dy = particles[i].y - particles[j].y;
+            let distance = dx * dx + dy * dy;
+
+            if (distance < 14000) {
+                ctx.beginPath();
+                ctx.strokeStyle = "rgba(255,255,255,0.12)";
+                ctx.lineWidth = 0.6;
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.stroke();
+            }
+        }
+    }
+}
+
+
+// ---------------------- ANIMATION LOOP ----------------------
 function animateParticles() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => p.update());
+
+    // Fade out pulse gradually
+    if (mouse.pulse > 0) mouse.pulse -= 0.02;
+    if (mouse.pulse < 0) mouse.pulse = 0;
+
+    particles.forEach((p) => p.update());
+    connectParticles();
+
     requestAnimationFrame(animateParticles);
 }
 animateParticles();

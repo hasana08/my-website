@@ -3,78 +3,53 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hasan Ibn Ahmed · Portfolio</title>
+    <title>Hasan Ibn Ahmed</title>
 
-    <!-- Icons -->
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
           crossorigin="anonymous" />
-
     <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <!-- Background canvas -->
+
+    <!-- Background -->
     <canvas id="bg-canvas"></canvas>
     <div class="cursor-glow"></div>
 
-    <!-- Header / Nav -->
+    <!-- NAV -->
     <header class="site-header">
         <div class="logo">HA</div>
         <nav class="nav-links">
-            <a href="#home">Home</a>
-            <a href="#about">About</a>
+            <a href="index.html" class="active">Home</a>
+            <a href="about.html">About</a>
             <a href="#resume">Resume</a>
             <a href="#contact">Contact</a>
         </nav>
     </header>
 
     <main>
+
         <!-- HERO / HOME -->
-<section id="home" class="section hero fade-in">
-    <div class="container">
-        <p class="eyebrow">Hi, I'm</p>
-        <h1><span id="typed-text"></span></h1>
-        <p class="subtitle">
-            Biochemistry Undergraduate · Aspiring Physician Assistant
-        </p>
-
-        <div class="hero-actions">
-            <a href="#resume" class="btn primary">View Resume</a>
-            <a href="#contact" class="btn ghost">Contact Me</a>
-        </div>
-
-        <div class="social-row">
-            <a href="mailto:hasanibnahmed08@gmail.com"><i class="fa-solid fa-envelope"></i></a>
-            <a href="https://www.linkedin.com/in/hasan-a-4b0b4336b/" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
-            <a href="https://www.instagram.com/hasan_a.08/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
-        </div>
-    </div>
-</section>
-
-
-        <!-- ABOUT -->
-        <section id="about" class="section fade-in">
+        <section id="home" class="section hero fade-in">
             <div class="container">
-                <h2 class="section-title">About</h2>
-                <div class="grid two-col">
-                    <div class="card floating">
-                        <h3>Who I Am</h3>
-                        <p>
-                            I'm Hasan, a Biochemistry undergraduate with a strong interest
-                            in healthcare and a long-term goal of becoming a Physician
-                            Assistant. I enjoy learning, teaching others, and finding
-                            clear, logical ways to understand complex ideas.
-                        </p>
-                    </div>
-                    <div class="card floating">
-                        <h3>What I'm Working On</h3>
-                        <p>
-                            Right now I'm focused on building a solid foundation in
-                            biochemistry, gaining real-world experience, and developing
-                            the skills I’ll need to work in clinical settings and help
-                            patients directly.
-                        </p>
-                    </div>
+                <p class="eyebrow">Hi, I'm</p>
+
+                <!-- TYPING EFFECT TARGET -->
+                <h1><span id="typed-text"></span></h1>
+
+                <p class="subtitle">
+                    Biochemistry Undergraduate · Aspiring Physician Assistant
+                </p>
+
+                <div class="hero-actions">
+                    <a href="#resume" class="btn primary">View Resume</a>
+                    <a href="#contact" class="btn ghost">Contact Me</a>
+                </div>
+
+                <div class="social-row">
+                    <a href="mailto:hasanibnahmed08@gmail.com"><i class="fa-solid fa-envelope"></i></a>
+                    <a href="https://www.linkedin.com/in/hasan-a-4b0b4336b/" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
+                    <a href="https://www.instagram.com/hasan_a.08/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
                 </div>
             </div>
         </section>
@@ -83,87 +58,17 @@
         <section id="resume" class="section fade-in">
             <div class="container">
                 <h2 class="section-title">Resume</h2>
-
-                <div class="grid two-col">
-                    <div class="card">
-                        <h3>Education</h3>
-                        <ul class="timeline">
-                            <li>
-                                <span class="timeline-title">Biochemistry (B.S.)</span>
-                                <span class="timeline-sub">Undergraduate · In Progress</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="card">
-                        <h3>Goals</h3>
-                        <ul class="timeline">
-                            <li>
-                                <span class="timeline-title">Physician Assistant (PA)</span>
-                                <span class="timeline-sub">Long-term career goal</span>
-                            </li>
-                            <li>
-                                <span class="timeline-title">Clinical Experience</span>
-                                <span class="timeline-sub">
-                                    Shadowing, volunteering, and patient-facing roles.
-                                </span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="resume-download">
-                    <!-- Replace resume.pdf with your real file later -->
-                    <a href="resume.pdf" target="_blank" class="btn primary">
-                        <i class="fa-solid fa-file-arrow-down"></i>
-                        Download PDF Resume
-                    </a>
-                    <p class="note">
-                        I'll upload my full resume here soon.
-                    </p>
-                </div>
+                <a class="btn primary" href="resume.pdf" target="_blank">
+                    <i class="fa-solid fa-file"></i> Download Resume
+                </a>
             </div>
         </section>
 
-        <!-- CONTACT / SOCIALS -->
+        <!-- CONTACT -->
         <section id="contact" class="section fade-in">
             <div class="container">
                 <h2 class="section-title">Contact</h2>
-                <div class="grid two-col">
-                    <div class="card">
-                        <h3>Get in Touch</h3>
-                        <p>
-                            The best way to reach me is by email or LinkedIn. I'm open to
-                            opportunities, networking, and anything related to biochemistry,
-                            healthcare, or learning.
-                        </p>
-                    </div>
-                    <div class="card">
-                        <h3>Links</h3>
-                        <ul class="contact-list">
-                            <li>
-                                <i class="fa-solid fa-envelope"></i>
-                                <a href="mailto:hasanibnahmed08@gmail.com">
-                                    hasanibnahmed08@gmail.com
-                                </a>
-                            </li>
-                            <li>
-                                <i class="fa-brands fa-linkedin-in"></i>
-                                <a href="https://www.linkedin.com/in/hasan-a-4b0b4336b/"
-                                   target="_blank" rel="noopener">
-                                    LinkedIn Profile
-                                </a>
-                            </li>
-                            <li>
-                                <i class="fa-brands fa-instagram"></i>
-                                <a href="https://www.instagram.com/hasan_a.08/"
-                                   target="_blank" rel="noopener">
-                                    @hasan_a.08
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                <p>Email: <a href="mailto:hasanibnahmed08@gmail.com">hasanibnahmed08@gmail.com</a></p>
             </div>
         </section>
     </main>
@@ -173,5 +78,6 @@
     </footer>
 
     <script src="script.js"></script>
+
 </body>
 </html>

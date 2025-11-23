@@ -141,7 +141,6 @@ function animate() {
 animate();
 
 // ========== TYPING EFFECT (MULTI PHRASE) ==========
-
 document.addEventListener("DOMContentLoaded", () => {
     const typedEl = document.getElementById("typed-text");
     if (!typedEl) return;
@@ -181,3 +180,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
     typeLoop();
 });
+

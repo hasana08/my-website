@@ -1,24 +1,38 @@
-// ================== YEAR + FADE-IN ==================
+// ========== YEAR + FADE-IN ==========
+
 document.addEventListener("DOMContentLoaded", () => {
     const yearSpan = document.getElementById("year");
     if (yearSpan) yearSpan.textContent = new Date().getFullYear();
 
-    document.querySelectorAll(".fade-in").forEach((el) => {
-        requestAnimationFrame(() => el.classList.add("visible"));
-    });
+    const fadeIns = document.querySelectorAll(".fade-in");
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                    observer.unobserve(entry.target);
+                }
+            });
+        },
+        { threshold: 0.15 }
+    );
+
+    fadeIns.forEach((el) => observer.observe(el));
 });
 
-// ================== CURSOR GLOW ==================
+// ========== CURSOR GLOW ==========
+
 const glow = document.querySelector(".cursor-glow");
+
 window.addEventListener("mousemove", (e) => {
     if (!glow) return;
     const size = glow.offsetWidth / 2;
-    glow.style.transform =
-        `translate3d(${e.clientX - size}px, ${e.clientY - size}px, 0)`;
+    glow.style.transform = `translate3d(${e.clientX - size}px, ${e.clientY - size}px, 0)`;
 });
 
-// ================== PARTICLES ==================
-const canvas = document.getElementById("particles");
+// ========== PARTICLE BACKGROUND ==========
+
+const canvas = document.getElementById("bg-canvas");
 const ctx = canvas.getContext("2d");
 
 let particles = [];
@@ -27,13 +41,15 @@ let mouse = { x: null, y: null, radius: 140, pulse: 0 };
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    initParticles();
 }
+
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
 window.addEventListener("mousemove", (e) => {
-    mouse.x = e.x;
-    mouse.y = e.y;
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
     mouse.pulse = 1;
 });
 
@@ -45,26 +61,31 @@ class Particle {
         this.baseY = y;
         this.size = size;
     }
+
     draw() {
         ctx.beginPath();
-        ctx.fillStyle = `rgba(255,255,255,${0.5 + mouse.pulse})`;
+        const alpha = 0.35 + mouse.pulse * 0.4;
+        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
     }
-    update() {
-        let dx = this.x - mouse.x;
-        let dy = this.y - mouse.y;
-        let distance = Math.sqrt(dx * dx + dy * dy);
 
-        if (distance < mouse.radius) {
-            let force = (mouse.radius - distance) / mouse.radius;
-            let fx = (dx / distance) * force * 6;
-            let fy = (dy / distance) * force * 6;
-            this.x += fx;
-            this.y += fy;
-        } else {
-            this.x -= (this.x - this.baseX) * 0.02;
-            this.y -= (this.y - this.baseY) * 0.02;
+    update() {
+        if (mouse.x !== null && mouse.y !== null) {
+            const dx = this.x - mouse.x;
+            const dy = this.y - mouse.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < mouse.radius) {
+                const force = (mouse.radius - distance) / mouse.radius;
+                const fx = (dx / distance) * force * 6;
+                const fy = (dy / distance) * force * 6;
+                this.x += fx;
+                this.y += fy;
+            } else {
+                this.x -= (this.x - this.baseX) * 0.02;
+                this.y -= (this.y - this.baseY) * 0.02;
+            }
         }
         this.draw();
     }
@@ -72,30 +93,31 @@ class Particle {
 
 function initParticles() {
     particles = [];
-    let number = (canvas.width * canvas.height) / 9000;
-    for (let i = 0; i < number; i++) {
-        particles.push(new Particle(
-            Math.random() * canvas.width,
-            Math.random() * canvas.height,
-            1.4
-        ));
+    const count = Math.floor((canvas.width * canvas.height) / 9000);
+    for (let i = 0; i < count; i++) {
+        particles.push(
+            new Particle(
+                Math.random() * canvas.width,
+                Math.random() * canvas.height,
+                1.4
+            )
+        );
     }
 }
-initParticles();
 
 function connectParticles() {
-    for (let a = 0; a < particles.length; a++) {
-        for (let b = a + 1; b < particles.length; b++) {
-            let dx = particles[a].x - particles[b].x;
-            let dy = particles[a].y - particles[b].y;
-            let distance = dx * dx + dy * dy;
+    for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const distanceSq = dx * dx + dy * dy;
 
-            if (distance < 15000) {
+            if (distanceSq < 15000) {
                 ctx.beginPath();
                 ctx.strokeStyle = "rgba(255,255,255,0.12)";
                 ctx.lineWidth = 0.6;
-                ctx.moveTo(particles[a].x, particles[a].y);
-                ctx.lineTo(particles[b].x, particles[b].y);
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
                 ctx.stroke();
             }
         }
@@ -104,20 +126,28 @@ function connectParticles() {
 
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (mouse.pulse > 0) mouse.pulse -= 0.02;
+
+    if (mouse.pulse > 0) {
+        mouse.pulse -= 0.02;
+        if (mouse.pulse < 0) mouse.pulse = 0;
+    }
+
     particles.forEach((p) => p.update());
     connectParticles();
+
     requestAnimationFrame(animate);
 }
+
 animate();
 
-// ================== TYPING TEXT (MULTI-PHRASE, HOME ONLY) ==================
+// ========== TYPING EFFECT (MULTI PHRASE) ==========
+
 document.addEventListener("DOMContentLoaded", () => {
-    const typed = document.getElementById("typed-name");
-    if (!typed) return; // safely does nothing on about.html
+    const typedEl = document.getElementById("typed-text");
+    if (!typedEl) return;
 
     const phrases = [
-        "Hasan Ahmed",
+        "Hasan Ibn Ahmed",
         "Biochemistry Undergraduate",
         "Aspiring Physician Assistant"
     ];
@@ -126,10 +156,9 @@ document.addEventListener("DOMContentLoaded", () => {
     let charIndex = 0;
     let deleting = false;
 
-    function loop() {
+    function typeLoop() {
         const current = phrases[phraseIndex];
-
-        typed.textContent = current.substring(0, charIndex);
+        typedEl.textContent = current.substring(0, charIndex);
 
         if (!deleting) {
             if (charIndex < current.length) {
@@ -147,8 +176,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const speed = deleting ? 70 : 120;
-        setTimeout(loop, speed);
+        setTimeout(typeLoop, speed);
     }
 
-    loop();
+    typeLoop();
 });

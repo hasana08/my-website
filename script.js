@@ -1,5 +1,6 @@
-// ========== YEAR + FADE-IN ==========
+// ========== YEAR, FADE-IN, and TYPING ==========
 document.addEventListener("DOMContentLoaded", () => {
+    // ===== YEAR + FADE-IN CODE =====
     const yearSpan = document.getElementById("year");
     if (yearSpan) yearSpan.textContent = new Date().getFullYear();
 
@@ -17,6 +18,48 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     fadeIns.forEach((el) => observer.observe(el));
+
+    // ===== TYPING EFFECT CODE =====
+    const typedEl = document.getElementById("typed-text");
+    if (!typedEl) return;
+
+    const phrases = [
+        "Hasan Ibn Ahmed",
+        "Biochemistry Undergraduate",
+        "Aspiring PA"
+    ];
+
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
+
+    function typeLoop() {
+        const current = phrases[phraseIndex];
+        typedEl.textContent = current.substring(0, charIndex);
+
+        if (!deleting) {
+            // typing forward
+            if (charIndex < current.length) {
+                charIndex++;
+            } else {
+                // pause full phrase
+                setTimeout(() => (deleting = true), 900);
+            }
+        } else {
+            // deleting backward
+            if (charIndex > 0) {
+                charIndex--;
+            } else {
+                deleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+            }
+        }
+
+        const speed = deleting ? 70 : 120;
+        setTimeout(typeLoop, speed);
+    }
+
+    typeLoop();
 });
 
 // ========== CURSOR GLOW ==========
@@ -137,46 +180,4 @@ function animate() {
 
 animate();
 
-// ========== TYPING EFFECT (MULTI PHRASE) ==========
-document.addEventListener("DOMContentLoaded", () => {
-    const typedEl = document.getElementById("typed-text");
-    if (!typedEl) return;
-
-    const phrases = [
-        "Hasan Ibn Ahmed",
-        "Biochemistry Undergraduate",
-        "Aspiring PA"
-    ];
-
-    let phraseIndex = 0;
-    let charIndex = 0;
-    let deleting = false;
-
-    function typeLoop() {
-        const current = phrases[phraseIndex];
-        typedEl.textContent = current.substring(0, charIndex);
-
-        if (!deleting) {
-            // typing forward
-            if (charIndex < current.length) {
-                charIndex++;
-            } else {
-                // pause full phrase
-                setTimeout(() => (deleting = true), 900);
-            }
-        } else {
-            // deleting backward
-            if (charIndex > 0) {
-                charIndex--;
-            } else {
-                deleting = false;
-                phraseIndex = (phraseIndex + 1) % phrases.length;
-            }
-        }
-
-        const speed = deleting ? 70 : 120;
-        setTimeout(typeLoop, speed);
-    }
-
-    typeLoop();
-});
+// (The second DOMContentLoaded listener that was here is now removed)

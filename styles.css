@@ -236,10 +236,7 @@ body {
     color: var(--text-sub);
 }
 
-/* Floating animation */
-.floating {
-    animation: float 7s ease-in-out infinite;
-}
+
 
 @keyframes float {
     0% { transform: translateY(0px); }
@@ -338,12 +335,14 @@ body {
     transform: translateY(0);
 }
 
-/* Typing cursor */
-#typed-text {
-    border-right: 3px solid #ffffff;
-    padding-right: 4px;
-    white-space: nowrap;
-    animation: blinkCursor 0.8s steps(1) infinite;
+@media (prefers-reduced-motion: no-preference) {
+    .floating {
+        animation: float 7s ease-in-out infinite;
+    }
+
+    #typed-text {
+        animation: blinkCursor 0.8s steps(1) infinite;
+    }
 }
 
 @keyframes blinkCursor {

@@ -1,44 +1,45 @@
-// ========== YEAR + FADE-IN ==========
-
+// ================== YEAR + FADE-IN ==================
 document.addEventListener("DOMContentLoaded", () => {
+    // YEAR
     const yearSpan = document.getElementById("year");
     if (yearSpan) yearSpan.textContent = new Date().getFullYear();
 
+    // FADE-IN
     const fadeIns = document.querySelectorAll(".fade-in");
-    const observer = new IntersectionObserver(
-        (entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add("visible");
-                    observer.unobserve(entry.target);
-                }
-            });
-        },
-        { threshold: 0.15 }
-    );
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15 });
 
     fadeIns.forEach((el) => observer.observe(el));
 });
 
-// ========== CURSOR GLOW ==========
 
+// ================== CURSOR GLOW ==================
 const glow = document.querySelector(".cursor-glow");
-
 window.addEventListener("mousemove", (e) => {
     if (!glow) return;
     const size = glow.offsetWidth / 2;
     glow.style.transform = `translate3d(${e.clientX - size}px, ${e.clientY - size}px, 0)`;
 });
 
-// ========== PARTICLE BACKGROUND ==========
 
+// ================== PARTICLE BACKGROUND ==================
 const canvas = document.getElementById("bg-canvas");
-const ctx = canvas.getContext("2d");
+let ctx = null;
+
+// Only get context if canvas exists
+if (canvas) ctx = canvas.getContext("2d");
 
 let particles = [];
 let mouse = { x: null, y: null, radius: 140, pulse: 0 };
 
 function resizeCanvas() {
+    if (!canvas || !ctx) return;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     initParticles();
@@ -63,6 +64,7 @@ class Particle {
     }
 
     draw() {
+        if (!ctx) return;
         ctx.beginPath();
         const alpha = 0.35 + mouse.pulse * 0.4;
         ctx.fillStyle = `rgba(255,255,255,${alpha})`;
@@ -71,6 +73,8 @@ class Particle {
     }
 
     update() {
+        if (!ctx) return;
+
         if (mouse.x !== null && mouse.y !== null) {
             const dx = this.x - mouse.x;
             const dy = this.y - mouse.y;
@@ -87,13 +91,16 @@ class Particle {
                 this.y -= (this.y - this.baseY) * 0.02;
             }
         }
+
         this.draw();
     }
 }
 
 function initParticles() {
+    if (!canvas || !ctx) return;
     particles = [];
     const count = Math.floor((canvas.width * canvas.height) / 9000);
+
     for (let i = 0; i < count; i++) {
         particles.push(
             new Particle(
@@ -106,13 +113,15 @@ function initParticles() {
 }
 
 function connectParticles() {
+    if (!ctx) return;
+
     for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
             const dx = particles[i].x - particles[j].x;
             const dy = particles[i].y - particles[j].y;
-            const distanceSq = dx * dx + dy * dy;
+            const distSq = dx * dx + dy * dy;
 
-            if (distanceSq < 15000) {
+            if (distSq < 15000) {
                 ctx.beginPath();
                 ctx.strokeStyle = "rgba(255,255,255,0.12)";
                 ctx.lineWidth = 0.6;
@@ -124,7 +133,9 @@ function connectParticles() {
     }
 }
 
-function animate() {
+function animateParticles() {
+    if (!ctx || !canvas) return;
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (mouse.pulse > 0) {
@@ -135,13 +146,13 @@ function animate() {
     particles.forEach((p) => p.update());
     connectParticles();
 
-    requestAnimationFrame(animate);
+    requestAnimationFrame(animateParticles);
 }
 
-animate();
+animateParticles();
 
-// ========== TYPING EFFECT (MULTI PHRASE) ==========
 
+// ================== TYPING EFFECT ==================
 document.addEventListener("DOMContentLoaded", () => {
     const typedEl = document.getElementById("typed-text");
     if (!typedEl) return;
@@ -161,15 +172,11 @@ document.addEventListener("DOMContentLoaded", () => {
         typedEl.textContent = current.substring(0, charIndex);
 
         if (!deleting) {
-            if (charIndex < current.length) {
-                charIndex++;
-            } else {
-                setTimeout(() => (deleting = true), 900);
-            }
+            if (charIndex < current.length) charIndex++;
+            else setTimeout(() => (deleting = true), 800);
         } else {
-            if (charIndex > 0) {
-                charIndex--;
-            } else {
+            if (charIndex > 0) charIndex--;
+            else {
                 deleting = false;
                 phraseIndex = (phraseIndex + 1) % phrases.length;
             }

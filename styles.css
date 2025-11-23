@@ -274,6 +274,7 @@ body {
 /* Resume download */
 .resume-download {
     margin-top: 26px;
+    text-align: center; /* <-- Add this line */
 }
 
 .resume-download .btn i {

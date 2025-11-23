@@ -119,6 +119,7 @@ body {
 .hero h1 {
     font-size: clamp(2.6rem, 4vw, 3.4rem);
     margin: 0 0 10px;
+    min-height: 1.2em;
 }
 
 .subtitle {

@@ -1,5 +1,4 @@
 // ========== YEAR + FADE-IN ==========
-
 document.addEventListener("DOMContentLoaded", () => {
     const yearSpan = document.getElementById("year");
     if (yearSpan) yearSpan.textContent = new Date().getFullYear();
@@ -21,7 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ========== CURSOR GLOW ==========
-
 const glow = document.querySelector(".cursor-glow");
 
 window.addEventListener("mousemove", (e) => {
@@ -31,7 +29,6 @@ window.addEventListener("mousemove", (e) => {
 });
 
 // ========== PARTICLE BACKGROUND ==========
-
 const canvas = document.getElementById("bg-canvas");
 const ctx = canvas.getContext("2d");
 
@@ -148,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const phrases = [
         "Hasan Ibn Ahmed",
         "Biochemistry Undergraduate",
-        "Aspiring Physician Assistant"
+        "Aspiring PA"
     ];
 
     let phraseIndex = 0;
@@ -160,12 +157,15 @@ document.addEventListener("DOMContentLoaded", () => {
         typedEl.textContent = current.substring(0, charIndex);
 
         if (!deleting) {
+            // typing forward
             if (charIndex < current.length) {
                 charIndex++;
             } else {
+                // pause full phrase
                 setTimeout(() => (deleting = true), 900);
             }
         } else {
+            // deleting backward
             if (charIndex > 0) {
                 charIndex--;
             } else {
@@ -180,4 +180,3 @@ document.addEventListener("DOMContentLoaded", () => {
 
     typeLoop();
 });
-

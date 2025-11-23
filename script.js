@@ -163,28 +163,3 @@ document.addEventListener("DOMContentLoaded", () => {
         "Aspiring Physician Assistant"
     ];
 
-    let phraseIndex = 0;
-    let charIndex = 0;
-    let deleting = false;
-
-    function typeLoop() {
-        const current = phrases[phraseIndex];
-        typedEl.textContent = current.substring(0, charIndex);
-
-        if (!deleting) {
-            if (charIndex < current.length) charIndex++;
-            else setTimeout(() => (deleting = true), 800);
-        } else {
-            if (charIndex > 0) charIndex--;
-            else {
-                deleting = false;
-                phraseIndex = (phraseIndex + 1) % phrases.length;
-            }
-        }
-
-        const speed = deleting ? 70 : 120;
-        setTimeout(typeLoop, speed);
-    }
-
-    typeLoop();
-});
